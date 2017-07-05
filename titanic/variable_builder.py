@@ -7,7 +7,7 @@ class VariableBuilder():
         self.df = pd.read_csv('train.csv')
 
     def __call__(self):
-        valid_data = self.build_variable()
+        valid_data = self.build_variable_x()
         valid_data = np.array(valid_data).astype(np.float32).T
         return valid_data
 
@@ -31,11 +31,11 @@ class VariableBuilder():
         else:
             return 3
 
-    def build_variable(self):
+    def build_variable_x(self):
         sex_list = list(map(VariableBuilder.convert_sex_to_int, self.df.Sex))
         age_list = list(map(lambda x: 0.0 if np.isnan(x) else x, self.df.Age))
         embarked_list = list(map(VariableBuilder.convert_embarked_to_int, self.df.Embarked))
-        return [
+        valid_data = [
             self.df.Pclass,
             sex_list,
             age_list,
@@ -44,3 +44,7 @@ class VariableBuilder():
             self.df.Fare,
             embarked_list
         ]
+        return np.array(valid_data).astype(np.float32).T
+
+    def build_variable_y(self):
+        return np.array(self.df.Survived).astype(np.int32)

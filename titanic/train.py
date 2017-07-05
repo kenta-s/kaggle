@@ -4,9 +4,9 @@ from IPython import embed
 from titanic_chain import TitanicChain
 
 variable_builder = VariableBuilder()
-x_train_data = Variable(variable_builder())
-# y_train_data
-row, col = train_data.shape
+x_train = Variable(variable_builder.build_variable_x())
+y_train = Variable(variable_builder.build_variable_y())
+row, col = x_train.shape
 
 titanic_chain = TitanicChain(col)
 
