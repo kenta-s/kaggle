@@ -42,4 +42,8 @@ for i in range(len(y)):
     if new_y[i] == y_test[i]:
         ok += 1
 
-print(ok / len(y))
+percent = ok / len(y)
+print(percent)
+
+if percent > 0.95:
+  serializers.save_npz('titanic.npz', model)
