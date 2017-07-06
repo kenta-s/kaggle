@@ -3,8 +3,8 @@ import pandas as pd
 from IPython import embed
 
 class VariableBuilder():
-    def __init__(self):
-        self.df = pd.read_csv('train.csv')
+    def __init__(self, file):
+        self.df = pd.read_csv(file)
 
     def __call__(self):
         valid_data = self.build_variable_x()

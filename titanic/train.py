@@ -4,7 +4,7 @@ import numpy as np
 from IPython import embed
 from titanic_chain import TitanicChain
 
-variable_builder = VariableBuilder()
+variable_builder = VariableBuilder('train.csv')
 x_train = variable_builder.build_variable_x()
 y_train = variable_builder.build_variable_y()
 row, col = x_train.shape
@@ -15,7 +15,7 @@ optimizer.setup(model)
 
 n = len(x_train)
 bs = 25
-for j in range(1000):
+for j in range(2000):
     sffindx = np.random.permutation(n)
     for i in range(0, n, bs):
         idx = sffindx[i:(i+bs) if (i+bs) < n else n]
@@ -26,4 +26,20 @@ for j in range(1000):
         loss.backward()
         optimizer.update()
 
-embed()
+variable_builder2 = VariableBuilder('test.csv')
+x_test = variable_builder2.build_variable_x()
+
+variable_builder3 = VariableBuilder('gender_submission.csv')
+y_test = variable_builder3.build_variable_y()
+
+y = model.fwd(x_test)
+alive = y.data >= 0.5
+
+new_y = np.zeros(len(y)).reshape(len(y),1)
+new_y[alive] = 1
+ok = 0
+for i in range(len(y)):
+    if new_y[i] == y_test[i]:
+        ok += 1
+
+print(ok / len(y))

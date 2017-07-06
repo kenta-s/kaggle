@@ -9,8 +9,8 @@ import chainer.links as L
 class TitanicChain(Chain):
     def __init__(self, input_length):
         super(TitanicChain, self).__init__(
-            l1 = L.Linear(input_length, 5),
-            l2 = L.Linear(5, 3),
+            l1 = L.Linear(input_length, 6),
+            l2 = L.Linear(6, 3),
             l3 = L.Linear(3, 1)
         )
 
