@@ -15,11 +15,11 @@ class TitanicChain(Chain):
         )
 
     def __call__(self, x, y):
-        # return F.mean_squared_error(self.fwd(x), y)
         return F.mean_squared_error(self.fwd(x), y)
+        # return F.binary_accuracy(self.fwd(x), y)
 
     def fwd(self, x):
-        h1 = F.softmax(self.l1(x))
+        h1 = self.l1(x)
         h2 = self.l2(h1)
         h3 = self.l3(h2)
-        return h3
+        return F.sigmoid(h3)
