@@ -49,4 +49,4 @@ class VariableBuilder():
     def build_variable_y(self):
         # y_list = list(map(lambda x: x-1, self.df.Survived))
         y_list = self.df.Survived
-        return np.array(y_list).astype(np.int32).reshape(len(self.df), 1)
+        return np.array(y_list).astype(np.float32).reshape(len(self.df), 1)
