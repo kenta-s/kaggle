@@ -13,9 +13,10 @@ model = TitanicChain(col)
 optimizer = optimizers.Adam()
 optimizer.setup(model)
 
+epoch = 2000
 n = len(x_train)
 bs = 25
-for j in range(2000):
+for j in range(epoch):
     sffindx = np.random.permutation(n)
     for i in range(0, n, bs):
         idx = sffindx[i:(i+bs) if (i+bs) < n else n]
@@ -25,6 +26,8 @@ for j in range(2000):
         loss = model(x, y)
         loss.backward()
         optimizer.update()
+
+    print('epoch:' + str(j + 1))
 
 variable_builder2 = VariableBuilder('test.csv')
 x_test = variable_builder2.build_variable_x()
@@ -45,5 +48,5 @@ for i in range(len(y)):
 percent = ok / len(y)
 print(percent)
 
-if percent > 0.95:
+if percent > 0.96:
   serializers.save_npz('titanic.npz', model)
