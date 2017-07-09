@@ -14,15 +14,15 @@ test = variable_builder2.build_test_variable('gender_submission.csv')
 
 col = len(train[0])
 
-train_iter = iterators.SerialIterator(train, batch_size=100, shuffle=True)
-test_iter = iterators.SerialIterator(test, batch_size=100, repeat=False, shuffle=False)
+train_iter = iterators.SerialIterator(train, batch_size=20, shuffle=True)
+test_iter = iterators.SerialIterator(test, batch_size=20, repeat=False, shuffle=False)
 
 model = L.Classifier(TitanicChain(col, 2))
 optimizer = optimizers.Adam()
 optimizer.setup(model)
 
 updater = training.StandardUpdater(train_iter, optimizer)
-trainer = training.Trainer(updater, (1000, 'epoch'), out='result')
+trainer = training.Trainer(updater, (300, 'epoch'), out='result')
 trainer.extend(extensions.Evaluator(test_iter, model))
 trainer.extend(extensions.LogReport())
 trainer.extend(extensions.PrintReport(['epoch', 'main/accuracy', 'validation/main/accuracy']))
