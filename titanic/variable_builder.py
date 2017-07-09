@@ -31,22 +31,38 @@ class VariableBuilder():
         else:
             return 3
 
-    def build_variable_x(self):
+    def build_train_variable(self):
         sex_list = list(map(VariableBuilder.convert_sex_to_int, self.df.Sex))
         age_list = list(map(lambda x: 0.0 if np.isnan(x) else x, self.df.Age))
         embarked_list = list(map(VariableBuilder.convert_embarked_to_int, self.df.Embarked))
-        valid_data = [
+        valid_data = np.array([
             self.df.Pclass,
             sex_list,
             age_list,
             self.df.SibSp,
             self.df.Parch,
             self.df.Fare,
-            embarked_list
-        ]
-        return np.array(valid_data).astype(np.float32).T
+            embarked_list,
+            self.df.Survived
+        ]).astype(np.float32)
+        data = list(map(lambda x: (np.array(x[0:7]), np.array(x[7]).astype(np.int32)), valid_data.T))
+        return data
 
-    def build_variable_y(self):
-        # y_list = list(map(lambda x: x-1, self.df.Survived))
-        y_list = self.df.Survived
-        return np.array(y_list).astype(np.float32).reshape(len(self.df), 1)
+    def build_test_variable(self, file):
+        sex_list = list(map(VariableBuilder.convert_sex_to_int, self.df.Sex))
+        age_list = list(map(lambda x: 0.0 if np.isnan(x) else x, self.df.Age))
+        embarked_list = list(map(VariableBuilder.convert_embarked_to_int, self.df.Embarked))
+        df2 = pd.read_csv(file)
+        survived = df2.Survived
+        valid_data = np.array([
+            self.df.Pclass,
+            sex_list,
+            age_list,
+            self.df.SibSp,
+            self.df.Parch,
+            self.df.Fare,
+            embarked_list,
+            survived
+        ]).astype(np.float32)
+        data = list(map(lambda x: (np.array(x[0:7]), np.array(x[7]).astype(np.int32)), valid_data.T))
+        return data
