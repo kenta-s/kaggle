@@ -11,7 +11,8 @@ class DataBuilder():
 
     def __call__(self):
         self.build_doc()
-        return self.build_np_array()
+        self.build_np_array()
+        return self.build_y()
 
     def build_doc(self):
         for row in self.df.values.tolist():
@@ -24,6 +25,13 @@ class DataBuilder():
             self.train_data.append(np.array(array).astype(np.float32))
 
         return self.train_data
+
+    def build_y(self):
+        train = []
+        for i in range(len(self.train_data)):
+            train.append((self.train_data[i], np.array(self.df.SalePrice[i], dtype=np.float32)))
+
+        return train
 
 d = DataBuilder('train.csv')
 # d.build_doc()
