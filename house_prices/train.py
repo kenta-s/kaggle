@@ -21,9 +21,11 @@ optimizer = optimizers.Adam()
 optimizer.setup(model)
 
 updater = training.StandardUpdater(train_iter, optimizer)
-trainer = training.Trainer(updater, (2000, 'epoch'), out='result')
+trainer = training.Trainer(updater, (1000, 'epoch'), out='result')
 trainer.extend(extensions.Evaluator(test_iter, model))
 trainer.extend(extensions.LogReport())
 trainer.extend(extensions.PrintReport(['epoch', 'main/loss', 'validation/main/loss']))
 trainer.extend(extensions.ProgressBar())
 trainer.run()
+
+serializers.save_npz('house_price.npz', model)

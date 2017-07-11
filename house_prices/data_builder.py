@@ -15,9 +15,11 @@ class DataBuilder():
         return self.build_y()
 
     def build_doc(self):
+        self.doc.load_from_text('house_price.dict')
         for row in self.df.values.tolist():
             strs = list(filter(lambda x: type(x) == str, row))
             self.doc.add_documents([strs])
+        self.doc.save_as_text('house_price.dict')
 
     def build_np_array(self):
         for row in self.df.drop("SalePrice", axis=1).values.tolist():
@@ -44,7 +46,3 @@ class DataBuilder():
             return 0.0
         else:
             return x
-
-# d = DataBuilder('train.csv')
-# d.build_doc()
-# d.build_np_array()
