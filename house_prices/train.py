@@ -11,8 +11,7 @@ whole_train_data = data_builder()
 train = whole_train_data[0:int(len(whole_train_data) - 100)]
 test = whole_train_data[int(len(whole_train_data) - 100):int(len(whole_train_data))]
 
-col = len(train[0])
-
+col = len(train[0][0])
 train_iter = iterators.SerialIterator(train, batch_size=20, shuffle=True)
 test_iter = iterators.SerialIterator(test, batch_size=20, repeat=False, shuffle=False)
 
@@ -21,7 +20,7 @@ optimizer = optimizers.Adam()
 optimizer.setup(model)
 
 updater = training.StandardUpdater(train_iter, optimizer)
-trainer = training.Trainer(updater, (1000, 'epoch'), out='result')
+trainer = training.Trainer(updater, (330, 'epoch'), out='result')
 trainer.extend(extensions.Evaluator(test_iter, model))
 trainer.extend(extensions.LogReport())
 trainer.extend(extensions.PrintReport(['epoch', 'main/loss', 'validation/main/loss']))

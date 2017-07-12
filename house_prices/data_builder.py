@@ -35,6 +35,13 @@ class DataBuilder():
 
         return train
 
+    def build_np_array_for_submission(self):
+        for row in self.df.values.tolist():
+            array = list(map(self.convert_to_float, row))
+            self.train_data.append(np.array(array).astype(np.float32))
+
+        return self.train_data
+
     def convert_to_float(self, x):
         if type(x) == str:
             flt = self.doc.token2id[x]
