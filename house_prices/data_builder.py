@@ -22,8 +22,13 @@ class DataBuilder():
         self.doc.save_as_text('house_price.dict')
 
     def build_np_array(self):
-        embed()
-        for row in self.df.drop("SalePrice", axis=1).values.tolist():
+        tmp = self.df.drop("Alley", axis=1)
+        tmp = tmp.drop("PoolQC", axis=1)
+        tmp = tmp.drop("MiscFeature", axis=1)
+        tmp = tmp.drop("Fence", axis=1)
+
+        tmp = tmp.drop("SalePrice", axis=1)
+        for row in tmp.values.tolist():
             array = list(map(self.convert_to_float, row))
             self.train_data.append(np.array(array).astype(np.float32))
 
