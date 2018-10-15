@@ -5,16 +5,8 @@ import sklearn.model_selection as sk
 from gensim import corpora
 
 from IPython import embed
+from math import isnan
 
-def create_dic(df, target_list):
-    dic = {}
-    for target in target_list:
-        dic[target] = corpora.Dictionary([df[target].unique()])
-    return dic
-
-df = pd.read_csv("train.csv")
-
-# TODO: remove invalid columns
 TARGET_LIST = [
     'MSZoning',
     'Street',
@@ -31,21 +23,43 @@ TARGET_LIST = [
     'HouseStyle',
     'RoofStyle',
     'RoofMatl',
-    'Exterior1st','Exterior2nd','MasVnrType','ExterQual','ExterCond','Foundation','BsmtQual','BsmtCond','BsmtExposure','BsmtFinType1','BsmtFinType2','Heating','HeatingQC','CentralAir','Electrical','1stFlrSF','2ndFlrSF','LowQualFinSF','GrLivArea','BsmtFullBath','BsmtHalfBath','FullBath','HalfBath','BedroomAbvGr','KitchenAbvGr','KitchenQual','TotRmsAbvGrd','Functional','Fireplaces','FireplaceQu','GarageType','GarageYrBlt','GarageFinish','GarageCars','GarageArea','GarageQual','GarageCond','PavedDrive','WoodDeckSF','OpenPorchSF','EnclosedPorch','3SsnPorch','ScreenPorch','PoolArea','PoolQC','Fence','MiscFeature','MiscVal','MoSold','YrSold','SaleType','SaleCondition'
+    'Exterior1st','Exterior2nd','MasVnrType','ExterQual','ExterCond','Foundation','BsmtQual','BsmtCond','BsmtExposure','BsmtFinType1','BsmtFinType2','Heating','HeatingQC','CentralAir','Electrical','KitchenQual','Functional','FireplaceQu','GarageType','GarageFinish','GarageQual','GarageCond','PavedDrive','PoolQC','Fence','MiscFeature','SaleType','SaleCondition'
 ]
 
-# dic = create_dic(df, target_list)
+def nan_to_0(target):
+    if type(target) == str:
+        return target
+    else:
+        return "0" if isnan(target) else target
 
-# mszoning_dic = corpora.Dictionary([df.MSZoning.unique()])
-# street_dic = corpora.Dictionary([df.Street.unique()])
-# alley_dic = corpora.Dictionary([df.Alley.unique()])
+def create_dic(df, target_list):
+    dic = {}
+    for target in target_list:
+        targets = df[target].unique()
+        new_targets = map(lambda x: nan_to_0(x), targets)
+        dic[target] = corpora.Dictionary([list(new_targets)])
+    return dic
+
+df = pd.read_csv("train.csv")
+
+dic = create_dic(df, TARGET_LIST)
+
 X = df[['MSSubClass','MSZoning','LotFrontage','LotArea','Street','Alley','LotShape','LandContour','Utilities','LotConfig','LandSlope','Neighborhood','Condition1','Condition2','BldgType','HouseStyle','OverallQual','OverallCond','YearBuilt','YearRemodAdd','RoofStyle','RoofMatl','Exterior1st','Exterior2nd','MasVnrType','MasVnrArea','ExterQual','ExterCond','Foundation','BsmtQual','BsmtCond','BsmtExposure','BsmtFinType1','BsmtFinSF1','BsmtFinType2','BsmtFinSF2','BsmtUnfSF','TotalBsmtSF','Heating','HeatingQC','CentralAir','Electrical','1stFlrSF','2ndFlrSF','LowQualFinSF','GrLivArea','BsmtFullBath','BsmtHalfBath','FullBath','HalfBath','BedroomAbvGr','KitchenAbvGr','KitchenQual','TotRmsAbvGrd','Functional','Fireplaces','FireplaceQu','GarageType','GarageYrBlt','GarageFinish','GarageCars','GarageArea','GarageQual','GarageCond','PavedDrive','WoodDeckSF','OpenPorchSF','EnclosedPorch','3SsnPorch','ScreenPorch','PoolArea','PoolQC','Fence','MiscFeature','MiscVal','MoSold','YrSold','SaleType','SaleCondition']]
 Y = df.SalePrice
 
-# x_train = np.array(X)
-# y_train = np.array(Y)
-# 
-# clf = RandomForestClassifier(n_estimators=20, n_jobs=3)
-# clf.fit(x_train, y_train)
-# 
-# embed()
+new_df = pd.DataFrame(['MSSubClass','MSZoning','LotFrontage','LotArea','Street','Alley','LotShape','LandContour','Utilities','LotConfig','LandSlope','Neighborhood','Condition1','Condition2','BldgType','HouseStyle','OverallQual','OverallCond','YearBuilt','YearRemodAdd','RoofStyle','RoofMatl','Exterior1st','Exterior2nd','MasVnrType','MasVnrArea','ExterQual','ExterCond','Foundation','BsmtQual','BsmtCond','BsmtExposure','BsmtFinType1','BsmtFinSF1','BsmtFinType2','BsmtFinSF2','BsmtUnfSF','TotalBsmtSF','Heating','HeatingQC','CentralAir','Electrical','1stFlrSF','2ndFlrSF','LowQualFinSF','GrLivArea','BsmtFullBath','BsmtHalfBath','FullBath','HalfBath','BedroomAbvGr','KitchenAbvGr','KitchenQual','TotRmsAbvGrd','Functional','Fireplaces','FireplaceQu','GarageType','GarageYrBlt','GarageFinish','GarageCars','GarageArea','GarageQual','GarageCond','PavedDrive','WoodDeckSF','OpenPorchSF','EnclosedPorch','3SsnPorch','ScreenPorch','PoolArea','PoolQC','Fence','MiscFeature','MiscVal','MoSold','YrSold','SaleType','SaleCondition'])
+for i in range(len(X)):
+    for header in TARGET_LIST:
+        tmp = X.at[i, header]
+        X.at[i, header] = dic[header].token2id[nan_to_0(tmp)]
+
+X = X.fillna(0.0)
+X = np.array(X)
+Y = np.array(Y)
+
+x_train, x_test, y_train, y_test = sk.train_test_split(X, Y, test_size=0.1)
+
+clf = RandomForestClassifier(n_jobs=3)
+clf.fit(x_train, y_train)
+ 
+embed()
