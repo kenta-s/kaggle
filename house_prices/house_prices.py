@@ -82,4 +82,4 @@ x = process_data2(test_df)
 ans = clf.predict(x)
 
 ans_df = pd.DataFrame({"Id": test_df.Id, "SalePrice": ans})
-ans_df.to_csv("answer.csv")
+ans_df.to_csv("answer.csv", index=False)
