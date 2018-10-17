@@ -28,4 +28,5 @@ fillna_columns = ["LotFrontage"]
 for column in fillna_columns:
     processed_df[column] = processed_df[column].fillna(0)
 
+# sns.pairplot(df[['Street', 'SalePrice']])
 embed()
