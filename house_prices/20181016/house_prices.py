@@ -16,7 +16,6 @@ for colum in list(df):
     if(nans[colum] != 0):
         print(colum)
         print(df[colum].isnull().sum())
-df.LotFrontage.fillna(0)
 
 transform_list = ["MSZoning"]
 for column in transform_list:
