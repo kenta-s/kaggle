@@ -1,0 +1,5 @@
+LotFrontage
+  fillna(0)
+
+Street
+  データのほとんどがPaveでGrvlはわずか6/1459だけど、SalesPriceとpairplotすると相関がみられたのでtransformして使う

@@ -17,7 +17,7 @@ for colum in list(df):
         print(colum)
         print(df[colum].isnull().sum())
 
-transform_list = ["MSZoning"]
+transform_list = ["MSZoning", "Street"]
 for column in transform_list:
     le = LabelEncoder()
     le.fit(df[column])
@@ -27,5 +27,5 @@ fillna_columns = ["LotFrontage"]
 for column in fillna_columns:
     processed_df[column] = processed_df[column].fillna(0)
 
-# sns.pairplot(df[['Street', 'SalePrice']])
+# sns.pairplot(df[['Street', 'SalePrice']], hue="Street")
 embed()
