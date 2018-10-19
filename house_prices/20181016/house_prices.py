@@ -6,26 +6,43 @@ from gensim import corpora
 import seaborn as sns
 import matplotlib.pyplot as plt
 from sklearn.preprocessing import LabelEncoder
+from sklearn.metrics import mean_squared_error
 
 from IPython import embed
 
 df = pd.read_csv("train.csv")
-processed_df = df
-nans = (df.isnull().sum() / len(df)) * 100
-for colum in list(df):
-    if(nans[colum] != 0):
-        print(colum)
-        print(df[colum].isnull().sum())
+to_be_used = df.corr()[df.corr().SalePrice > 0.2].index
+processed_df = df[to_be_used]
+# nans = (df.isnull().sum() / len(df)) * 100
+# for colum in list(df):
+#     if(nans[colum] != 0):
+#         print(colum)
+#         print(df[colum].isnull().sum())
 
-transform_list = ["MSZoning", "Street"]
-for column in transform_list:
-    le = LabelEncoder()
-    le.fit(df[column])
-    processed_df[column] = le.transform(df[column])
+# transform_list = ["MSZoning", "Street"]
+# for column in transform_list:
+#     le = LabelEncoder()
+#     le.fit(df[column])
+#     processed_df[column] = le.transform(df[column])
 
-fillna_columns = ["LotFrontage"]
-for column in fillna_columns:
-    processed_df[column] = processed_df[column].fillna(0)
+def process_data(target_df):
+    # for column in to_be_used:
+    for column in target_df.columns:
+        target_df[column] = target_df[column].fillna(0)
+    return target_df
 
-# sns.pairplot(df[['Street', 'SalePrice']], hue="Street")
-embed()
+processed_df = process_data(processed_df)
+
+X = processed_df.drop('SalePrice', axis=1)
+Y = processed_df.SalePrice
+x_train, x_test, y_train, y_test = sk.train_test_split(X, Y, test_size=0.0)
+clf = RandomForestClassifier()
+clf.fit(x_train, y_train)
+
+raw_data = pd.read_csv("../test.csv")
+test_data = pd.read_csv("../test.csv")[to_be_used.drop('SalePrice')]
+test_data = process_data(test_data)
+result = clf.predict(test_data)
+ans = np.array([raw_data.Id, result]).T
+ans_csv = pd.DataFrame(ans, columns=["Id", "SalePrice"])
+ans_csv.to_csv("answer.csv", index=False)
