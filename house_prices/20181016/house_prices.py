@@ -47,6 +47,8 @@ raw_data = pd.read_csv("../test.csv")
 test_data = pd.read_csv("../test.csv")[to_be_used.drop('SalePrice')]
 test_data = process_data(test_data)
 result = clf.predict(test_data)
-ans = np.array([raw_data.Id, result]).T
-ans_csv = pd.DataFrame(ans, columns=["Id", "SalePrice"])
+# ans = np.array([raw_data.Id, result]).T
+ans_csv = pd.concat((raw_data.Id, pd.DataFrame(result)), axis=1)
+# ans_csv = pd.DataFrame(ans, columns=["Id", "SalePrice"])
+ans_csv.columns = ["Id", "SalePrice"]
 ans_csv.to_csv("answer.csv", index=False)
