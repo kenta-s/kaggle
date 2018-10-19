@@ -1,4 +1,5 @@
 from sklearn.ensemble import RandomForestClassifier
+from sklearn.ensemble import RandomForestRegressor
 import numpy as np
 import pandas as pd
 import sklearn.model_selection as sk
@@ -36,8 +37,11 @@ processed_df = process_data(processed_df)
 X = processed_df.drop('SalePrice', axis=1)
 Y = processed_df.SalePrice
 x_train, x_test, y_train, y_test = sk.train_test_split(X, Y, test_size=0.0)
-clf = RandomForestClassifier()
+clf = RandomForestRegressor()
 clf.fit(x_train, y_train)
+
+# rmse = np.sqrt(mean_squared_error(y_test, clf.predict(x_test)))
+# print(rmse)
 
 raw_data = pd.read_csv("../test.csv")
 test_data = pd.read_csv("../test.csv")[to_be_used.drop('SalePrice')]
