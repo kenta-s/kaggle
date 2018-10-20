@@ -13,21 +13,12 @@ from IPython import embed
 
 df = pd.read_csv("train.csv")
 to_be_used = df.corr()[df.corr().SalePrice > 0.2].index
-processed_df = df[to_be_used]
-# nans = (df.isnull().sum() / len(df)) * 100
-# for colum in list(df):
-#     if(nans[colum] != 0):
-#         print(colum)
-#         print(df[colum].isnull().sum())
 
-# transform_list = ["MSZoning", "Street"]
-# for column in transform_list:
-#     le = LabelEncoder()
-#     le.fit(df[column])
-#     processed_df[column] = le.transform(df[column])
+# GarageYrBltはYearBltとの相関が高い 0.825667
+to_be_used = to_be_used.drop(["GarageYrBlt"])
+processed_df = df[to_be_used]
 
 def process_data(target_df):
-    # for column in to_be_used:
     for column in target_df.columns:
         target_df[column] = target_df[column].fillna(0)
     return target_df
@@ -36,8 +27,8 @@ processed_df = process_data(processed_df)
 
 X = processed_df.drop('SalePrice', axis=1)
 Y = processed_df.SalePrice
-x_train, x_test, y_train, y_test = sk.train_test_split(X, Y, test_size=0.0)
-clf = RandomForestRegressor()
+x_train, x_test, y_train, y_test = sk.train_test_split(X, Y, test_size=0.1)
+clf = RandomForestRegressor(max_depth=7)
 clf.fit(x_train, y_train)
 
 # rmse = np.sqrt(mean_squared_error(y_test, clf.predict(x_test)))
@@ -47,8 +38,6 @@ raw_data = pd.read_csv("../test.csv")
 test_data = pd.read_csv("../test.csv")[to_be_used.drop('SalePrice')]
 test_data = process_data(test_data)
 result = clf.predict(test_data)
-# ans = np.array([raw_data.Id, result]).T
 ans_csv = pd.concat((raw_data.Id, pd.DataFrame(result)), axis=1)
-# ans_csv = pd.DataFrame(ans, columns=["Id", "SalePrice"])
 ans_csv.columns = ["Id", "SalePrice"]
 ans_csv.to_csv("answer.csv", index=False)
