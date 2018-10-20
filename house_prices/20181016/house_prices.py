@@ -12,10 +12,14 @@ from sklearn.metrics import mean_squared_error
 from IPython import embed
 
 df = pd.read_csv("train.csv")
+
+# corr()でstrがすべて除外されてしまうのでこのままじゃだめ
 to_be_used = df.corr()[df.corr().SalePrice > 0.2].index
 
 # GarageYrBltはYearBltとの相関が高い 0.825667
-to_be_used = to_be_used.drop(["GarageYrBlt"])
+# 1stFlrSFはTotalBsmtSFとの相関が高い 0.819530
+# GarageAreaはGarageCarsとの相関が高い 0.882475
+to_be_used = to_be_used.drop(["GarageYrBlt", "1stFlrSF", "GarageArea"])
 processed_df = df[to_be_used]
 
 def process_data(target_df):
