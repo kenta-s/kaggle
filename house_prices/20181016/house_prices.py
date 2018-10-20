@@ -10,6 +10,8 @@ from sklearn.preprocessing import LabelEncoder
 from sklearn.metrics import mean_squared_error
 
 from IPython import embed
+import re
+import glob
 
 df = pd.read_csv("train.csv")
 
@@ -90,7 +92,7 @@ processed_df = df[to_be_used]
 X = processed_df.drop('SalePrice', axis=1)
 Y = processed_df.SalePrice
 x_train, x_test, y_train, y_test = sk.train_test_split(X, Y, test_size=0.1)
-clf = RandomForestRegressor(n_estimators=1700, max_depth=12, n_jobs=10)
+clf = RandomForestRegressor(n_estimators=2400, max_depth=11, n_jobs=20)
 clf.fit(x_train, y_train)
 
 rmse = np.sqrt(mean_squared_error(y_test, clf.predict(x_test)))
@@ -101,6 +103,10 @@ test_data = transform_df(raw_data)
 test_data = test_data[to_be_used.drop('SalePrice')]
 test_data = process_data(test_data)
 result = clf.predict(test_data)
-ans_csv = pd.concat((raw_data.Id, pd.DataFrame(result)), axis=1)
-ans_csv.columns = ["Id", "SalePrice"]
-ans_csv.to_csv('csvs/{rmse}.csv'.format(rmse=int(rmse)), index=False)
+files = glob.glob('csvs/*')
+scores = list(map(lambda x: int(re.sub(r'\D', '', x)), files))
+best_score = min(scores)
+if rmse < best_score:
+    ans_csv = pd.concat((raw_data.Id, pd.DataFrame(result)), axis=1)
+    ans_csv.columns = ["Id", "SalePrice"]
+    ans_csv.to_csv('csvs/{rmse}.csv'.format(rmse=int(rmse)), index=False)
