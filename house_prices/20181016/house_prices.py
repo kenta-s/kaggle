@@ -28,11 +28,11 @@ processed_df = process_data(processed_df)
 X = processed_df.drop('SalePrice', axis=1)
 Y = processed_df.SalePrice
 x_train, x_test, y_train, y_test = sk.train_test_split(X, Y, test_size=0.1)
-clf = RandomForestRegressor(max_depth=7)
+clf = RandomForestRegressor(n_estimators=1300, max_depth=7, n_jobs=10)
 clf.fit(x_train, y_train)
 
-# rmse = np.sqrt(mean_squared_error(y_test, clf.predict(x_test)))
-# print(rmse)
+rmse = np.sqrt(mean_squared_error(y_test, clf.predict(x_test)))
+print("RMSE: " + str(rmse))
 
 raw_data = pd.read_csv("../test.csv")
 test_data = pd.read_csv("../test.csv")[to_be_used.drop('SalePrice')]
