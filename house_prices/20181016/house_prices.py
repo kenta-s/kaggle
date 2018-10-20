@@ -15,6 +15,10 @@ import glob
 
 df = pd.read_csv("train.csv")
 
+missingColumns = [
+    'LotFrontage'
+]
+
 strColumns = [
     'MSZoning',
     'Street',
@@ -62,6 +66,13 @@ strColumns = [
 ]
 
 processed_df = df
+def missing(target_df):
+    for column in missingColumns:
+        new_column = 'missing_{}'.format(column)
+        index = target_df[column].isnull()
+        target_df[new_column] = index
+    return target_df
+
 def transform_df(target_df):
     for column in strColumns:
         target_df[column] = target_df[column].fillna('None')
@@ -74,6 +85,9 @@ def process_data(target_df):
     for column in target_df.columns:
         if str in map(lambda x: type(x), target_df[column]):
             target_df[column] = target_df[column].fillna('None')
+        elif column in missingColumns:
+            target_df = missing(target_df)
+            target_df[column] = target_df[column].fillna(target_df[column].mean())
         else:
             target_df[column] = target_df[column].fillna(0)
     return target_df
@@ -100,8 +114,8 @@ print("RMSE: " + str(rmse))
 
 raw_data = pd.read_csv("../test.csv")
 test_data = transform_df(raw_data)
-test_data = test_data[to_be_used.drop('SalePrice')]
 test_data = process_data(test_data)
+test_data = test_data[to_be_used.drop('SalePrice')]
 result = clf.predict(test_data)
 files = glob.glob('csvs/*')
 scores = list(map(lambda x: int(re.sub(r'\D', '', x)), files))
