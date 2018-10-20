@@ -40,4 +40,4 @@ test_data = process_data(test_data)
 result = clf.predict(test_data)
 ans_csv = pd.concat((raw_data.Id, pd.DataFrame(result)), axis=1)
 ans_csv.columns = ["Id", "SalePrice"]
-ans_csv.to_csv("answer.csv", index=False)
+ans_csv.to_csv('csvs/{rmse}.csv'.format(rmse=int(rmse)), index=False)
