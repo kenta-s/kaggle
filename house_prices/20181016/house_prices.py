@@ -14,11 +14,11 @@ import re
 import glob
 from data_augmentation import DataAugmentation
 
-da = DataAugmentation()
-da.augment()
+# da = DataAugmentation()
+# da.augment()
 
-# df = pd.read_csv("train.csv")
-df = pd.read_csv("augmented.csv")
+df = pd.read_csv("train.csv")
+# df = pd.read_csv("augmented.csv")
 original_df = df.copy()
 
 # MasVnrType, MasVnrAreaの欠損値は入力漏れっぽい？除外。8 rows
@@ -111,12 +111,13 @@ to_be_used = processed_df.corr()[processed_df.corr().SalePrice.abs() > 0.2].inde
 # GarageYrBltはYearBltとの相関が高い 0.825667
 # 1stFlrSFはTotalBsmtSFとの相関が高い 0.819530
 # GarageAreaはGarageCarsとの相関が高い 0.882475
-to_be_used = to_be_used.drop(["GarageYrBlt", "1stFlrSF", "GarageArea"])
+# TotRmsAbvGrdはGrLivAreaとの相関が高い 0.828094
+to_be_used = to_be_used.drop(["GarageYrBlt", "1stFlrSF", "GarageArea", "TotRmsAbvGrd"])
 processed_df = df[to_be_used]
 
 X = processed_df.drop('SalePrice', axis=1)
 Y = processed_df.SalePrice
-x_train, x_test, y_train, y_test = sk.train_test_split(X, Y, test_size=0.1)
+x_train, x_test, y_train, y_test = sk.train_test_split(X, Y, test_size=0.01)
 clf = RandomForestRegressor(n_estimators=3000, max_depth=11, n_jobs=20)
 clf.fit(x_train, y_train)
 
@@ -137,5 +138,6 @@ if rmse < best_score:
     ans_csv.to_csv('csvs/{rmse}.csv'.format(rmse=int(rmse)), index=False)
 
 # Id == 314 のSalePriceがやたら高く、これをうまくpredictできてなかったので調べる
+# Id == 969 のSalePriceは低すぎて外してた
 
 embed()
