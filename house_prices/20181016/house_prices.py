@@ -12,8 +12,13 @@ from sklearn.metrics import mean_squared_error
 from IPython import embed
 import re
 import glob
+from data_augmentation import DataAugmentation
 
-df = pd.read_csv("train.csv")
+da = DataAugmentation()
+da.augment()
+
+# df = pd.read_csv("train.csv")
+df = pd.read_csv("augmented.csv")
 original_df = df.copy()
 
 # MasVnrType, MasVnrAreaの欠損値は入力漏れっぽい？除外。8 rows
@@ -112,7 +117,7 @@ processed_df = df[to_be_used]
 X = processed_df.drop('SalePrice', axis=1)
 Y = processed_df.SalePrice
 x_train, x_test, y_train, y_test = sk.train_test_split(X, Y, test_size=0.1)
-clf = RandomForestRegressor(n_estimators=300, max_depth=11, n_jobs=20)
+clf = RandomForestRegressor(n_estimators=3000, max_depth=11, n_jobs=20)
 clf.fit(x_train, y_train)
 
 rmse = np.sqrt(mean_squared_error(y_test, clf.predict(x_test)))
@@ -130,3 +135,7 @@ if rmse < best_score:
     ans_csv = pd.concat((raw_data.Id, pd.DataFrame(result)), axis=1)
     ans_csv.columns = ["Id", "SalePrice"]
     ans_csv.to_csv('csvs/{rmse}.csv'.format(rmse=int(rmse)), index=False)
+
+# Id == 314 のSalePriceがやたら高く、これをうまくpredictできてなかったので調べる
+
+embed()
