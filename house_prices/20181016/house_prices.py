@@ -15,6 +15,7 @@ import re
 import glob
 from data_augmentation import DataAugmentation
 import xgboost as xgb
+from xgboost import plot_importance
 
 # da = DataAugmentation()
 # da.augment()
@@ -108,7 +109,7 @@ def process_data(target_df):
 processed_df = transform_df(processed_df)
 processed_df = process_data(processed_df)
 
-to_be_used = processed_df.corr()[processed_df.corr().SalePrice.abs() > 0.2].index
+to_be_used = processed_df.corr()[processed_df.corr().SalePrice.abs() > 0.1].index
 
 # GarageYrBltはYearBltとの相関が高い 0.825667
 # 1stFlrSFはTotalBsmtSFとの相関が高い 0.819530
