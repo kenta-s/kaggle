@@ -14,6 +14,12 @@ import re
 import glob
 
 df = pd.read_csv("train.csv")
+original_df = df.copy()
+
+# MasVnrType, MasVnrAreaの欠損値は入力漏れっぽい？除外。8 rows
+df = df.dropna(subset=['MasVnrType', 'MasVnrArea'])
+
+print('rows: {}'.format(len(df)))
 
 missingColumns = [
     'LotFrontage'
