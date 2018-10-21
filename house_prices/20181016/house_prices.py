@@ -9,10 +9,12 @@ import matplotlib.pyplot as plt
 from sklearn.preprocessing import LabelEncoder
 from sklearn.metrics import mean_squared_error
 
+from datetime import datetime
 from IPython import embed
 import re
 import glob
 from data_augmentation import DataAugmentation
+import xgboost as xgb
 
 # da = DataAugmentation()
 # da.augment()
@@ -118,7 +120,8 @@ processed_df = df[to_be_used]
 X = processed_df.drop('SalePrice', axis=1)
 Y = processed_df.SalePrice
 x_train, x_test, y_train, y_test = sk.train_test_split(X, Y, test_size=0.01)
-clf = RandomForestRegressor(n_estimators=3000, max_depth=11, n_jobs=20)
+# clf = RandomForestRegressor(n_estimators=1000, max_depth=8, n_jobs=20)
+clf = xgb.XGBRegressor()
 clf.fit(x_train, y_train)
 
 rmse = np.sqrt(mean_squared_error(y_test, clf.predict(x_test)))
@@ -132,12 +135,9 @@ result = clf.predict(test_data)
 files = glob.glob('csvs/*')
 scores = list(map(lambda x: int(re.sub(r'\D', '', x)), files))
 best_score = min(scores)
-if rmse < best_score:
-    ans_csv = pd.concat((raw_data.Id, pd.DataFrame(result)), axis=1)
-    ans_csv.columns = ["Id", "SalePrice"]
-    ans_csv.to_csv('csvs/{rmse}.csv'.format(rmse=int(rmse)), index=False)
+ans_csv = pd.concat((raw_data.Id, pd.DataFrame(result)), axis=1)
+ans_csv.columns = ["Id", "SalePrice"]
+ans_csv.to_csv('csvs/{rmse}_{time}.csv'.format(rmse=int(rmse), time=int(datetime.now().timestamp())), index=False)
 
-# Id == 314 のSalePriceがやたら高く、これをうまくpredictできてなかったので調べる
+# Id == 314 のSalePriceがやたら高く、これをうまくpredictできてなかったので調べる -> 削除した
 # Id == 969 のSalePriceは低すぎて外してた
-
-embed()
