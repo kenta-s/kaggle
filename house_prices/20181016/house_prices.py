@@ -44,7 +44,9 @@ lotfrontage = lotfrontage(df)
 df.loc[df.LotFrontage.isnull(), 'LotFrontage'] = lotfrontage[df.LotFrontage.isnull()]
 test_df = pd.read_csv("../test.csv")
 all_df = pd.concat([df, test_df])
-all_df = drop_columns(all_df)
+
+# これやると精度下がる？
+# all_df = drop_columns(all_df)
 original_df = df.copy()
 
 train_num = len(df)
@@ -73,6 +75,8 @@ best_score = min(scores)
 ans_csv = pd.concat((raw_data.Id, pd.DataFrame(result)), axis=1)
 ans_csv.columns = ["Id", "SalePrice"]
 ans_csv.to_csv('csvs/{rmse}_{time}.csv'.format(rmse=int(rmse), time=int(datetime.now().timestamp())), index=False)
+
+embed()
 
 # Id == 314 のSalePriceがやたら高く、これをうまくpredictできてなかったので調べる -> 削除した
 # Id == 969 のSalePriceは低すぎて外してた
