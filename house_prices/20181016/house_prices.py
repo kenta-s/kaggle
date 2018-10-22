@@ -17,6 +17,8 @@ from data_augmentation import DataAugmentation
 import xgboost as xgb
 from xgboost import plot_importance
 
+from lotfrontage_filler import LotfrontageFiller
+
 def drop_columns(df):
     to_be_used = df.corr()[df.corr().SalePrice.abs() > 0.2].index
     
@@ -28,10 +30,18 @@ def drop_columns(df):
     return df[to_be_used]
 # da = DataAugmentation()
 # da.augment()
+def lotfrontage(df):
+    df = df.dropna(subset=['MasVnrType', 'MasVnrArea'])
+    df = pd.get_dummies(df)
+    l = LotfrontageFiller()
+    lotfrontage = l.predict(df)
+    return lotfrontage
 
 df = pd.read_csv("train.csv")
 # MasVnrType, MasVnrAreaの欠損値は入力漏れっぽい？除外。8 rows
 df = df.dropna(subset=['MasVnrType', 'MasVnrArea'])
+lotfrontage = lotfrontage(df)
+df.loc[df.LotFrontage.isnull(), 'LotFrontage'] = lotfrontage[df.LotFrontage.isnull()]
 test_df = pd.read_csv("../test.csv")
 all_df = pd.concat([df, test_df])
 all_df = drop_columns(all_df)

@@ -13,6 +13,7 @@ class LotfrontageFiller():
         self.clf.fit(self.x_train, self.y_train)
     
     def predict(self, df):
+        df = df[self.x_train.columns]
         return self.clf.predict(df)
 
     def process(self, df):
