@@ -34,6 +34,7 @@ df = pd.read_csv("train.csv")
 df = df.dropna(subset=['MasVnrType', 'MasVnrArea'])
 test_df = pd.read_csv("../test.csv")
 all_df = pd.concat([df, test_df])
+all_df = drop_columns(all_df)
 original_df = df.copy()
 
 train_num = len(df)
