@@ -60,7 +60,7 @@ X = df.drop('SalePrice', axis=1)
 Y = df.SalePrice
 x_train, x_test, y_train, y_test = sk.train_test_split(X, Y, test_size=0.01)
 # clf = RandomForestRegressor(n_estimators=1000, max_depth=8, n_jobs=20)
-clf = xgb.XGBRegressor()
+clf = xgb.XGBRegressor(max_depth=3)
 clf.fit(x_train, y_train)
 
 rmse = np.sqrt(mean_squared_error(y_test, clf.predict(x_test)))
@@ -75,8 +75,6 @@ best_score = min(scores)
 ans_csv = pd.concat((raw_data.Id, pd.DataFrame(result)), axis=1)
 ans_csv.columns = ["Id", "SalePrice"]
 ans_csv.to_csv('csvs/{rmse}_{time}.csv'.format(rmse=int(rmse), time=int(datetime.now().timestamp())), index=False)
-
-embed()
 
 # Id == 314 のSalePriceがやたら高く、これをうまくpredictできてなかったので調べる -> 削除した
 # Id == 969 のSalePriceは低すぎて外してた
